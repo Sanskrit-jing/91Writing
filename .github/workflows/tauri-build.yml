@@ -4,19 +4,11 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [windows-latest]
-
-    runs-on: ${{ matrix.platform }}
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
@@ -27,23 +19,25 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Rust stable
+      - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-pc-windows-msvc
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './91xiezuo-tauri/src-tauri -> target'
 
-      - name: Install frontend dependencies (tauri)
+      - name: Install frontend dependencies
         working-directory: ./91xiezuo-tauri
-        run: npm ci
+        run: npm install
 
-      - name: Build the app
+      - name: Build frontend
         working-directory: ./91xiezuo-tauri
         run: npm run build
+
+      - name: Build Tauri app
+        working-directory: ./91xiezuo-tauri
+        run: npx tauri build
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
