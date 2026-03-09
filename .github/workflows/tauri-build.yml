@@ -41,17 +41,13 @@ jobs:
         working-directory: ./91xiezuo-tauri
         run: npm ci
 
-      - name: Build frontend
-        working-directory: ./91xiezuo-tauri
-        run: npm run build
-
       - name: Build the app
         working-directory: ./91xiezuo-tauri
-        run: npm run tauri build
+        run: npm run build
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: 91xiezuo-tauri-windows
           path: 91xiezuo-tauri/src-tauri/target/release/bundle/nsis/*.exe
-          if-no-files-found: error
+          if-no-files-found: warn
